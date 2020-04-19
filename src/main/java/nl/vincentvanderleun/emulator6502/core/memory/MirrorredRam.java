@@ -1,5 +1,8 @@
 package nl.vincentvanderleun.emulator6502.core.memory;
 
+import nl.vincentvanderleun.emulator6502.core.ReadableMemory;
+import nl.vincentvanderleun.emulator6502.core.WritableMemory;
+
 public class MirrorredRam implements WritableMemory, ReadableMemory {
 	private final Ram originalRam;
 	private final int startAddress;
@@ -27,20 +30,10 @@ public class MirrorredRam implements WritableMemory, ReadableMemory {
 	}
 
 	@Override
-	public void writeAsUnsignedByte(int address, int value) {
-		write(address, (byte)value);
-	}
-	
-	@Override
 	public byte read(int address) {
 		int readAddress = calcAddress(address);
 		
 		return originalRam.read(readAddress);
-	}
-
-	@Override
-	public int readAsUnsignedByte(int address) {
-		return read(address) & 0xFF;
 	}
 
 	private int calcAddress(int address) {

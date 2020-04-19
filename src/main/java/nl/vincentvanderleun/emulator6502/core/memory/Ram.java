@@ -1,5 +1,8 @@
 package nl.vincentvanderleun.emulator6502.core.memory;
 
+import nl.vincentvanderleun.emulator6502.core.ReadableMemory;
+import nl.vincentvanderleun.emulator6502.core.WritableMemory;
+
 public class Ram implements ReadableMemory, WritableMemory {
 	private int startAddress;
 	
@@ -21,18 +24,8 @@ public class Ram implements ReadableMemory, WritableMemory {
 	}
 
 	@Override
-	public int readAsUnsignedByte(int address) {
-		return read(address) & 0xff;
-	}
-	
-	@Override
 	public void write(int address, byte value) {
 		memory[address - startAddress] = value;
-	}
-	
-	@Override
-	public void writeAsUnsignedByte(int address, int value) {
-		write(address, (byte)value);
 	}
 	
 	@Override

@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.emulator6502.core;
+package nl.vincentvanderleun.emulator6502.core.bus;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -9,7 +9,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import nl.vincentvanderleun.emulator6502.core.memory.Memory;
+import nl.vincentvanderleun.emulator6502.core.Cpu;
+import nl.vincentvanderleun.emulator6502.core.Memory;
+import nl.vincentvanderleun.emulator6502.core.bus.DynamicBus;
 import nl.vincentvanderleun.emulator6502.core.memory.Ram;
 import nl.vincentvanderleun.emulator6502.core.memory.Rom;
 

@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import nl.vincentvanderleun.emulator6502.core.Memory;
+
 public class ContiniousMemoryBuilderTests {
 	private ContiniousMemoryBuilder builder = new ContiniousMemoryBuilder();
 	private List<Memory> memory;
@@ -15,18 +17,19 @@ public class ContiniousMemoryBuilderTests {
 		byte[] ramIndex1Data = { 1, 2, 3 };
 		byte[] romIndex2Data = { 4, 5, 6 };
 		
-		memory = builder.addRamMemory(2)	// index 0: 0..1
-			.addRamMemory(ramIndex1Data)	// index 1: 2..4
-			.addRomMemory(romIndex2Data)	// index 2: 5..7
-			.addMirroredRam(1)				// index 3: 8..10
-			.skipBytes(2)					// <not addressed>: 11..12
-			.addMirroredRom(2)				// index 4: 13..15
+		memory = builder.addRam(2)	// index 0: 0..1
+			.addRam(ramIndex1Data)	// index 1: 2..4
+			.addRom(romIndex2Data)	// index 2: 5..7
+			.addMirroredRam(1)		// index 3: 8..10
+			.skipBytes(2)			// <not addressed>: 11..12
+			.addMirroredRom(2)		// index 4: 13..15
+			.addZeroRom(3)			// index 5: 16..18
 			.build();
 	}
 	
 	@Test
 	public void builtMemoryMustBeContiniousOfAddedTypesAndContainData() {
-		assertEquals(5, memory.size());
+		assertEquals(6, memory.size());
 		
 		assertEquals(0, memory.get(0).getStartAddress());
 		assertEquals(1, memory.get(0).getEndAddress());
@@ -49,5 +52,9 @@ public class ContiniousMemoryBuilderTests {
 		assertEquals(13, memory.get(4).getStartAddress());
 		assertEquals(15, memory.get(4).getEndAddress());
 		assertTrue(memory.get(4) instanceof MirrorredRom);
+		
+		assertEquals(16, memory.get(5).getStartAddress());
+		assertEquals(18, memory.get(5).getEndAddress());
+		assertTrue(memory.get(5) instanceof ZeroRom);
 	}
 }

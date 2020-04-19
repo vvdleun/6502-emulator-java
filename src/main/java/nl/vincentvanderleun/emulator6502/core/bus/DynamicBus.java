@@ -1,18 +1,21 @@
-package nl.vincentvanderleun.emulator6502.core;
+package nl.vincentvanderleun.emulator6502.core.bus;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import nl.vincentvanderleun.emulator6502.core.memory.Memory;
-import nl.vincentvanderleun.emulator6502.core.memory.ReadableMemory;
-import nl.vincentvanderleun.emulator6502.core.memory.WritableMemory;
+import nl.vincentvanderleun.emulator6502.core.Bus;
+import nl.vincentvanderleun.emulator6502.core.Cpu;
+import nl.vincentvanderleun.emulator6502.core.Memory;
+import nl.vincentvanderleun.emulator6502.core.ReadableMemory;
+import nl.vincentvanderleun.emulator6502.core.WritableMemory;
 
 public class DynamicBus extends Bus {
 	private final List<Memory> memory;
 	
 	public DynamicBus(Cpu cpu, List<Memory> memory) {
 		super(cpu);
+		cpu.connectToBus(this);
 
 		this.memory = new ArrayList<>(memory);
 	}

@@ -2,6 +2,8 @@ package nl.vincentvanderleun.emulator6502.core.memory;
 
 import java.util.Arrays;
 
+import nl.vincentvanderleun.emulator6502.core.ReadableMemory;
+
 public class Rom implements ReadableMemory {
 	private final Ram memory;
 	
@@ -16,11 +18,6 @@ public class Rom implements ReadableMemory {
 		return memory.read(address);
 	}
 
-	@Override
-	public int readAsUnsignedByte(int address) {
-		return memory.readAsUnsignedByte(address);
-	}
-	
 	@Override
 	public int getStartAddress() {
 		return memory.getStartAddress();
