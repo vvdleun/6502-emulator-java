@@ -54,17 +54,20 @@ public class AddressingModeHelper {
 	}
 
 	public int fetchIndexedIndirectAddress(int pc, int x) {
-		// Address must stay in zero page		
 		int zeroPageAddress = toZeroPageAddress(readMemoryFrom(pc + 1) + x);
 		int addressLow = bus.readAsUnsignedByte(zeroPageAddress);
 		int addressHigh = bus.readAsUnsignedByte(toZeroPageAddress(zeroPageAddress + 1));
- 		return readMemoryFrom(addressLow + (addressHigh << 8));
+ 		return addressLow + (addressHigh << 8);
 	}
 
 	public int fetchIndirectIndexedAddress(int pc, int y) {
-		int indirectAddress = readMemoryFrom(pc + 1);
+		int addressPtr = bus.readAsUnsignedByte(pc + 1);
+
+		int addressLow = bus.readAsUnsignedByte(addressPtr);
+		int addressHigh = bus.readAsUnsignedByte(addressPtr + 1);
+		
 		// Memory does not wrap at zero page, resulting address can be anywhere
-		return toAddress(indirectAddress + y);
+		return toAddress(addressLow + (addressHigh << 8) + y);
 	}
 
 	// Helper methods
@@ -75,11 +78,11 @@ public class AddressingModeHelper {
 		return bus.readAsUnsignedByte(readAddress);
 	}
 
-	private int toZeroPageAddress(int b) {
-		return b & 0xFF;
-	}	
-
 	private int toAddress(int address) {
 		return address & 0xFFFF;
+	}	
+
+	private int toZeroPageAddress(int b) {
+		return b & 0xFF;
 	}	
 }

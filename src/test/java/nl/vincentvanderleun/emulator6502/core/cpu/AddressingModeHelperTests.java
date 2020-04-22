@@ -121,16 +121,31 @@ public class AddressingModeHelperTests {
 		int actual = adressingModeHelper.fetchIndexedIndirectAddress(PROGRAM_COUNTER, REGISTER_X);
 		
 		// Memory map:
-		//	Ah)   Opcode: A1h
-		//	Bh)   06h
-		//  10h)  02h
-		//  11h)   Bh
-		//  B02h)  Fh
+		//   0Ah)   Opcode: A1h
+		//   0Bh)   		06h
+		//   10h)  			02h
+		//   11h)  			B0h
+		// B002h) 			0Fh
 
-		// Register X: 6h
+		// Register X: 		06h
 		
-		// Ah + 6h = 10h --> Address on 10h+11h: B02h --> Value: Fh
-		assertEquals(0xF, actual);
+		// Ah + 6h = 10h --> Address on 10h+11h: B002h
+		assertEquals(0xB002, actual);
+	}
+	
+	@Test
+	public void shouldFetchIndirectIndexedAddress() {
+		byte[] programData = { (byte)0xA1, 0xF, 0, 0, 0, 0x02, (byte)0xB0 };	// Range: 0x0A..0x10
+		byte[] data = { 0, 0, 0, 0xF };											// Range: 0xB00..0xB02
+		
+		final int REGISTER_Y = 0x2;
+		
+		AddressingModeHelper adressingModeHelper = createAddressingModesHelper(programData);
+	
+		int actual = adressingModeHelper.fetchIndirectIndexedAddress(PROGRAM_COUNTER, REGISTER_Y);
+		
+		// 0xF --> 0xB002 --> 0xB002 + 2 = 0xB004
+		assertEquals(0xB004, actual);
 	}
 	
 
