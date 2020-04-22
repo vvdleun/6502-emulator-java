@@ -111,7 +111,7 @@ public class AddressingModeHelperTests {
 
 	@Test
 	public void shouldFetchIndexedIndirectAddress() {
-		byte[] programData = { (byte)0xA1, 6, 0, 0, 0, 0, 0x02, (byte)0xB };	// Range: 0x0A..0x11
+		byte[] programData = { (byte)0xA1, 6, 0, 0, 0, 0, 0x02, (byte)0xB0 };	// Range: 0x0A..0x11
 		byte[] data = { 0, 0, 0xF };											// Range: 0xB00..0xB02
 		
 		final int REGISTER_X = 0xA;
@@ -144,7 +144,7 @@ public class AddressingModeHelperTests {
 		List<Memory> memory = new ArrayList<>();
 
 		final int START_ADDRESS_PROGRAM = PROGRAM_COUNTER;
-		final int START_ADDRESS_DATA = 0xB00;
+		final int START_ADDRESS_DATA = 0xB000;
 		
 		Rom rom1 = new Rom(START_ADDRESS_PROGRAM, programBytes);
 		memory.add(rom1);
