@@ -5,7 +5,7 @@ import nl.vincentvanderleun.emulator6502.core.Bus;
 public class AddressingModeHelper {
 	private final Bus bus;
 	
-	public AddressingModeHelper(Bus bus) {
+	AddressingModeHelper(Bus bus) {
 		this.bus = bus;
 	}
 	
