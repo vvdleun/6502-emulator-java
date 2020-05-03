@@ -18,8 +18,9 @@ public class Cpu6502 implements Cpu {
 	private final StatusFlags statusFlags;
 
 	private Bus bus = null;
+	private Stack stack = null;
 	private AddressingModeHelper addressingModes = null;
-
+	
 	public Cpu6502() {
 		this(new Registers(), new StatusFlags());
   	}
@@ -33,6 +34,7 @@ public class Cpu6502 implements Cpu {
 	public void connectToBus(Bus bus) {
 		this.bus = bus;
 		this.addressingModes = new AddressingModeHelper(bus);
+		this.stack = new Stack(registers, bus);
 	}
 
 	@Override
@@ -47,25 +49,4 @@ public class Cpu6502 implements Cpu {
 	public StatusFlags getStatusFlags() {
 		return statusFlags;
 	}
-	
-//	private byte read(int address) {
-//		return bus.read(address);
-//	}
-//		
-//	private int readAsUnsignedByte(int address) {
-//		return bus.readAsUnsignedByte(address);
-//	}
-//
-//	private void write(int address, byte value) {
-//		bus.write(address,  value);
-//	}
-//	
-//	private void writeAsUnsignedByte(int address, int value) {
-//		bus.writeAsUnsignedByte(address, value);
-//	}
-//
-//	@Override
-//	public Bus getBus() {
-//		return bus;
-//	}
 }

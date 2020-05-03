@@ -24,7 +24,7 @@ public class AddressingModeHelper {
 	
 	public int fetchZeroPageXAddress(int pc, int x) {
 		int zeroPageAddress = readMemoryFrom(pc + 1);
-		return toZeroPageAddress(zeroPageAddress + x);
+		return toByte(zeroPageAddress + x);
 	}
 	
 	public int fetchZeroPageYAddress(int pc, int y) {
@@ -33,7 +33,7 @@ public class AddressingModeHelper {
 
 	public int fetchAbsoluteXAddress(int pc, int x) {
 		int absoluteAddress = fetchAbsoluteAddress(pc);
-		return toAddress(absoluteAddress + x);
+		return toWord(absoluteAddress + x);
 	}
 
 	public int fetchAbsoluteYAddress(int pc, int y) {
@@ -54,9 +54,9 @@ public class AddressingModeHelper {
 	}
 
 	public int fetchIndexedIndirectAddress(int pc, int x) {
-		int zeroPageAddress = toZeroPageAddress(readMemoryFrom(pc + 1) + x);
+		int zeroPageAddress = toByte(readMemoryFrom(pc + 1) + x);
 		int addressLow = bus.readAsUnsignedByte(zeroPageAddress);
-		int addressHigh = bus.readAsUnsignedByte(toZeroPageAddress(zeroPageAddress + 1));
+		int addressHigh = bus.readAsUnsignedByte(toByte(zeroPageAddress + 1));
  		return addressLow + (addressHigh << 8);
 	}
 
@@ -64,25 +64,23 @@ public class AddressingModeHelper {
 		int addressPtr = bus.readAsUnsignedByte(pc + 1);
 
 		int addressLow = bus.readAsUnsignedByte(addressPtr);
-		int addressHigh = bus.readAsUnsignedByte(addressPtr + 1);
+		int addressHigh = bus.readAsUnsignedByte(toByte(addressPtr + 1));
 		
-		// Memory does not wrap at zero page, resulting address can be anywhere
-		return toAddress(addressLow + (addressHigh << 8) + y);
+		// Address does not wrap at zero page, resulting address can be anywhere
+		return toWord(addressLow + (addressHigh << 8) + y);
 	}
 
 	// Helper methods
 	
 	private int readMemoryFrom(int address) {
-		// Make sure program counter does not overflow :-/
-		int readAddress = toAddress(address);
-		return bus.readAsUnsignedByte(readAddress);
+		return bus.readAsUnsignedByte(toWord(address));
 	}
 
-	private int toAddress(int address) {
+	private int toWord(int address) {
 		return address & 0xFFFF;
 	}	
 
-	private int toZeroPageAddress(int b) {
+	private int toByte(int b) {
 		return b & 0xFF;
 	}	
 }
