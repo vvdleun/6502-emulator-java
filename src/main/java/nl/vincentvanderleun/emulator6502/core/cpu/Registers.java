@@ -1,8 +1,7 @@
 package nl.vincentvanderleun.emulator6502.core.cpu;
 
-public class Registers {
+public class Registers implements Cloneable {
 	// 6502 registers
-	// TODO change to signed :'( primitive byte type later?
 	private int a;
 	private int x;
 	private int y;
@@ -55,5 +54,16 @@ public class Registers {
 
 	public void increasePc(int value) {
 		setPc(this.pc += value);
+	}
+	
+	@Override
+	public Registers clone() {
+		Registers copy = new Registers();
+		copy.setA(a);
+		copy.setX(x);
+		copy.setY(y);
+		copy.setPc(pc);
+		copy.setSp(sp);
+		return copy;
 	}
 }

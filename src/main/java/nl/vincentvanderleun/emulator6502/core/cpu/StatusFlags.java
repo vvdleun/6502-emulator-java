@@ -18,7 +18,14 @@ public class StatusFlags {
 	private int flags;
 	
 	// Carry flag
-	
+
+	public StatusFlags setCarry(boolean on) {
+		if(on) {
+			return setCarry();
+		}
+		return resetCarry();
+	}
+
 	public StatusFlags setCarry() {
 		return setSingleFlag(1);
 	}
@@ -33,6 +40,13 @@ public class StatusFlags {
 
 	// Zero flag
 
+	public StatusFlags setZero(boolean on) {
+		if(on) {
+			return setZero();
+		}
+		return resetZero();
+	}
+	
 	public StatusFlags setZero() {
 		return setSingleFlag(2);
 	}
@@ -46,7 +60,14 @@ public class StatusFlags {
 	}
 	
 	// Interrupt disable flag
-	
+
+	public StatusFlags setInterruptDisable(boolean on) {
+		if(on) {
+			return setInterruptDisable();
+		}
+		return resetInterruptDisable();
+	}
+
 	public StatusFlags setInterruptDisable() {
 		return setSingleFlag(4);
 	}
@@ -60,6 +81,13 @@ public class StatusFlags {
 	}
 
 	// Decimal flag
+
+	public StatusFlags setDecimal(boolean on) {
+		if(on) {
+			return setDecimal();
+		}
+		return resetDecimal();
+	}
 
 	public StatusFlags setDecimal() {
 		return setSingleFlag(8);
@@ -75,6 +103,13 @@ public class StatusFlags {
 	
 	// Overflow flag
 
+	public StatusFlags setOverflow(boolean on) {
+		if(on) {
+			return setOverflow();
+		}
+		return resetOverflow();
+	}
+
 	public StatusFlags setOverflow() {
 		return setSingleFlag(64);
 	}
@@ -88,6 +123,13 @@ public class StatusFlags {
 	}
 	
 	// Negative flag
+
+	public StatusFlags setNegative(boolean on) {
+		if(on) {
+			return setNegative();
+		}
+		return resetNegative();
+	}
 
 	public StatusFlags setNegative() {
 		return setSingleFlag(128);

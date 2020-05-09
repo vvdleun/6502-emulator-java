@@ -98,4 +98,61 @@ public class StatusFlagsTests {
 		assertEquals(0, flags.getFlags());
 	}
 	
+	@Test
+	public void usingBooleanParametersShouldWork() {
+		// Carry
+		flags.setCarry(true);
+		assertEquals(1, flags.getCarry());
+		assertEquals(0b0000_0001, flags.getFlags());
+
+		flags.setCarry(false);
+		assertEquals(0, flags.getCarry());
+		assertEquals(0b0000_0000, flags.getFlags());
+
+		// Zero
+		flags.setZero(true);
+		assertEquals(1, flags.getZero());
+		assertEquals(0b0000_0010, flags.getFlags());
+
+		flags.setZero(false);
+		assertEquals(0, flags.getZero());
+		assertEquals(0b0000_0000, flags.getFlags());
+		
+		// Interrupt Disable
+		flags.setInterruptDisable(true);
+		assertEquals(1, flags.getInterruptDisable());
+		assertEquals(0b0000_0100, flags.getFlags());
+
+		flags.setInterruptDisable(false);
+		assertEquals(0, flags.getInterruptDisable());
+		assertEquals(0b0000_0000, flags.getFlags());
+
+		// Decimal		
+		flags.setDecimal(true);
+		assertEquals(1, flags.getDecimal());
+		assertEquals(0b0000_1000, flags.getFlags());
+
+		flags.setDecimal(false);
+		assertEquals(0, flags.getDecimal());
+		assertEquals(0b0000_0000, flags.getFlags());
+
+		// Overflow
+		flags.setOverflow(true);
+		assertEquals(1, flags.getOverflow());
+		assertEquals(0b0100_0000, flags.getFlags());
+
+		flags.setOverflow(false);
+		assertEquals(0, flags.getOverflow());
+		assertEquals(0b0000_0000, flags.getFlags());
+
+		// Negative
+		flags.setNegative(true);
+		assertEquals(1, flags.getNegative());
+		assertEquals(0b1000_0000, flags.getFlags());
+
+		flags.setNegative(false);
+		assertEquals(0, flags.getNegative());
+		assertEquals(0b0000_0000, flags.getFlags());
+	}
+	
 }

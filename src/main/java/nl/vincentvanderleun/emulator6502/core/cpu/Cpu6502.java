@@ -14,6 +14,7 @@ public class Cpu6502 implements Cpu {
 	 * 
 	 * Also, this is very much WIP.
 	 */
+	
 	private final Registers registers;
 	private final StatusFlags statusFlags;
 
@@ -39,8 +40,67 @@ public class Cpu6502 implements Cpu {
 
 	@Override
 	public void clock() {
+		runNextInstruction();
+	}
+	
+	private void runNextInstruction() {
+		int temp;
+
+		int instruction = getOpcode();
+		final Registers previousRegisters = registers.clone();
+		
+		switch(instruction) {
+		// ADC (Add with Carry)
+		case 0x69:
+			// Immediate
+			// TODO IMPLEMENT DECIMAL MODE
+			temp = registers.getA() + readAtImmediateAddress() + statusFlags.getCarry();
+			registers.setA(temp);
+			// updateFlagsNZCV(previousRegisters);
+		}
 		
 	}
+
+	// Helper methods
+
+	// - Address modes
+	
+	private int readAtImmediateAddress() {
+		final int address = addressingModes.fetchAbsoluteAddress(registers.getPc());
+		return readMemoryAt(address); 
+	}
+
+	// - CPU flags
+
+//	 *		NVss DIZC
+//	 * 		|||| ||||
+//	 *		|||| |||+- Carry
+//	 *		|||| ||+-- Zero
+//	 *		|||| |+--- Interrupt Disable
+//	 *		|||| +---- Decimal
+//	 *		||++------ No CPU effect, see: the B flag
+//	 *		|+-------- Overflow
+//	 *		+--------- Negative
+
+		
+
+	// - Registers
+
+	private void increaseSp(int value) {
+		registers.setSp((registers.getSp() + 1) & 0xFFF);
+	}
+	
+	// - Other
+
+	private int getOpcode() {
+		return readMemoryAt(registers.getSp());		
+	}
+	
+	private int readMemoryAt(int address) {
+		return bus.readAsUnsignedByte(address & 0xFFFF);
+	}
+	
+	// Getters / setters
 	
 	public Registers getRegisters() {
 		return registers;
