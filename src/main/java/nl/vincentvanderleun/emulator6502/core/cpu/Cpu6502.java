@@ -1,5 +1,7 @@
 package nl.vincentvanderleun.emulator6502.core.cpu;
 
+import java.util.function.Supplier;
+
 import nl.vincentvanderleun.emulator6502.core.Bus;
 import nl.vincentvanderleun.emulator6502.core.Cpu;
 
@@ -52,42 +54,42 @@ public class Cpu6502 implements Cpu {
 			// ADC (Add with Carry)
 			case 0x69:
 				// Immediate
-				adc(readImmediateValue());
+				adc(this::readImmediateValue);
 				increasePc(2);
 				break;
 			case 0x65:
 				// Zero Page
-				adc(readFromZeroPageAddress());
+				adc(this::readFromZeroPageAddress);
 				increasePc(2);
 				break;
 			case 0x75:
 				// Zero Page, X
-				adc(readFromZeroPageXAddress());
+				adc(this::readFromZeroPageXAddress);
 				increasePc(2);
 				break;
 			case 0x6D:
 				// Absolute
-				adc(readFromAbsoluteAddress());
+				adc(this::readFromAbsoluteAddress);
 				increasePc(3);
 				break;
 			case 0x7D:
 				// Absolute,X
-				adc(readFromAbsoluteXAddress());
+				adc(this::readFromAbsoluteXAddress);
 				increasePc(3);
 				break;
 			case 0x79:
 				// Absolute,Y
-				adc(readFromAbsoluteYAddress());
+				adc(this::readFromAbsoluteYAddress);
 				increasePc(3);
 				break;
 			case 0x61:
 				// Indirect,X
-				adc(readFromIndirectXAddress());
+				adc(this::readFromIndirectXAddress);
 				increasePc(2);
 				break;
 			case 0x71:
 				// Indirect,Y
-				adc(readFromIndirectYAddress());
+				adc(this::readFromIndirectYAddress);
 				increasePc(2);
 				break;
 			default:
@@ -125,7 +127,7 @@ public class Cpu6502 implements Cpu {
 	}
 
 	private int readFromAbsoluteYAddress() {
-		final int address = addressingModes.fetchAbsoluteXAddress(registers.getPc(), registers.getY());
+		final int address = addressingModes.fetchAbsoluteYAddress(registers.getPc(), registers.getY());
 		return readMemoryAt(address);
 	}
 	
@@ -135,14 +137,14 @@ public class Cpu6502 implements Cpu {
 	}
 
 	private int readFromIndirectYAddress() {
-		final int address = addressingModes.fetchIndirectXAddress(registers.getPc(), registers.getY());
+		final int address = addressingModes.fetchIndirectYAddress(registers.getPc(), registers.getY());
 		return readMemoryAt(address);
 	}
 	
 	// - Instructions
 	
-	private void adc(int value) {
-		instructionHelper.adc(registers, statusFlags, value);
+	private void adc(Supplier<Integer> memorySupplier) {
+		instructionHelper.adc(registers, statusFlags, memorySupplier.get());
 	}
 
 	// - Registers
