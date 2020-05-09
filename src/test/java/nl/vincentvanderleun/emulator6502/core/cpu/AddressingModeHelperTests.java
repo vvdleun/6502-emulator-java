@@ -15,7 +15,7 @@ import nl.vincentvanderleun.emulator6502.core.bus.DynamicBus;
 import nl.vincentvanderleun.emulator6502.core.memory.Rom;
 
 public class AddressingModeHelperTests {
-	private static final int PROGRAM_COUNTER = 10;
+	private static final int PROGRAM_COUNTER = 0x0A;
 
 	@Test
 	public void shouldFetchAbsoluteAddress() {
@@ -118,7 +118,7 @@ public class AddressingModeHelperTests {
 		
 		AddressingModeHelper adressingModeHelper = createAddressingModesHelper(programData, data);
 	
-		int actual = adressingModeHelper.fetchIndexedIndirectAddress(PROGRAM_COUNTER, REGISTER_X);
+		int actual = adressingModeHelper.fetchIndirectXAddress(PROGRAM_COUNTER, REGISTER_X);
 		
 		// Memory map:
 		//   0Ah)   Opcode: A1h
@@ -136,15 +136,14 @@ public class AddressingModeHelperTests {
 	@Test
 	public void shouldFetchIndirectIndexedAddress() {
 		byte[] programData = { (byte)0xA1, 0xF, 0, 0, 0, 0x02, (byte)0xB0 };	// Range: 0x0A..0x10
-		byte[] data = { 0, 0, 0, 0xF };											// Range: 0xB00..0xB02
 		
 		final int REGISTER_Y = 0x2;
 		
 		AddressingModeHelper adressingModeHelper = createAddressingModesHelper(programData);
 	
-		int actual = adressingModeHelper.fetchIndirectIndexedAddress(PROGRAM_COUNTER, REGISTER_Y);
+		int actual = adressingModeHelper.fetchIndirectYAddress(PROGRAM_COUNTER, REGISTER_Y);
 		
-		// 0xF --> 0xB002 --> 0xB002 + 2 = 0xB004
+		// On address 0x0F the stored address is 0xB002 --> 0xB002 + register Y's 2 = 0xB004
 		assertEquals(0xB004, actual);
 	}
 	

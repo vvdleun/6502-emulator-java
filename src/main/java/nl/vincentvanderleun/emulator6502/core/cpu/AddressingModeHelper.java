@@ -53,14 +53,14 @@ public class AddressingModeHelper {
 		return bus.readAsUnsignedByte(address);
 	}
 
-	public int fetchIndexedIndirectAddress(int pc, int x) {
+	public int fetchIndirectXAddress(int pc, int x) {
 		int zeroPageAddress = toByte(readMemoryFrom(pc + 1) + x);
 		int addressLow = bus.readAsUnsignedByte(zeroPageAddress);
 		int addressHigh = bus.readAsUnsignedByte(toByte(zeroPageAddress + 1));
  		return addressLow + (addressHigh << 8);
 	}
 
-	public int fetchIndirectIndexedAddress(int pc, int y) {
+	public int fetchIndirectYAddress(int pc, int y) {
 		int addressPtr = bus.readAsUnsignedByte(pc + 1);
 
 		int addressLow = bus.readAsUnsignedByte(addressPtr);
