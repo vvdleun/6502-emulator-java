@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import nl.vincentvanderleun.emulator6502.core.Cpu;
@@ -24,9 +25,10 @@ public class DynamicBusTests {
 	private final byte[] memory3Data = { 8, 9, 10 };
 	private final Rom memory3 = new Rom(7, memory3Data); 	// Covers bytes 7..9 (byte 6 is not addressed)
 	private final List<Memory> memory = new ArrayList<>();
-	private final DynamicBus bus;
+	private DynamicBus bus;
 
-	public DynamicBusTests() {
+	@BeforeEach
+	public void setup() {
 		memory.add(memory1);
 		memory.add(memory2);
 		memory.add(memory3);
@@ -96,5 +98,19 @@ public class DynamicBusTests {
 		  assertThrows(IllegalStateException.class, () -> {
 			  bus.write(10, (byte)0);
 		  });
+	}
+	
+	@Test
+	public void shouldThrowWhenMemoryOverlaps() {
+		byte[] memoryData = { 42 };
+		Rom rom = new Rom(1, memoryData); // start address 1 collides with existing memory1 instance
+		
+		memory.add(rom);
+
+		bus = new DynamicBus(cpu, memory);
+
+	  assertThrows(IllegalStateException.class, () -> {
+		  bus.read(1);
+	  });
 	}
 }

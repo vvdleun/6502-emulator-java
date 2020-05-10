@@ -129,15 +129,6 @@ class MemoryReaderHelperTests {
 	}
 
 	@Test
-	public void readingZeroPageYAddressShouldDelegateToCorrectMethod() {
-		when(adressingModeHelper.fetchZeroPageYAddress(PROGRAM_COUNTER, Y_REGISTER)).thenReturn(ADDRESS);
-
-		int result = memoryReaderHelper.readFromZeroPageYAddress();
-
-		assertEquals(42, result);
-	}
-
-	@Test
 	public void readingRelativeAddressShouldDelegateToCorrectMethod() {
 		when(adressingModeHelper.fetchRelativeAddress(PROGRAM_COUNTER)).thenReturn(ADDRESS);
 

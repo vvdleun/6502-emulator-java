@@ -61,42 +61,42 @@ public class Cpu6502 implements Cpu {
 			case 0x69:
 				// Immediate
 				adc(memoryReader::readImmediateValue);
-				increasePc(2);
+				registers.increasePc(2);
 				break;
 			case 0x65:
 				// Zero Page
 				adc(memoryReader::readFromZeroPageAddress);
-				increasePc(2);
+				registers.increasePc(2);
 				break;
 			case 0x75:
 				// Zero Page, X
 				adc(memoryReader::readFromZeroPageXAddress);
-				increasePc(2);
+				registers.increasePc(2);
 				break;
 			case 0x6D:
 				// Absolute
 				adc(memoryReader::readFromAbsoluteAddress);
-				increasePc(3);
+				registers.increasePc(3);
 				break;
 			case 0x7D:
 				// Absolute,X
 				adc(memoryReader::readFromAbsoluteXAddress);
-				increasePc(3);
+				registers.increasePc(3);
 				break;
 			case 0x79:
 				// Absolute,Y
 				adc(memoryReader::readFromAbsoluteYAddress);
-				increasePc(3);
+				registers.increasePc(3);
 				break;
 			case 0x61:
 				// Indirect,X
 				adc(memoryReader::readFromIndirectXAddress);
-				increasePc(2);
+				registers.increasePc(2);
 				break;
 			case 0x71:
 				// Indirect,Y
 				adc(memoryReader::readFromIndirectYAddress);
-				increasePc(2);
+				registers.increasePc(2);
 				break;
 			default:
 				throw new IllegalStateException("Unknown opcode: " + opcode);
@@ -109,12 +109,6 @@ public class Cpu6502 implements Cpu {
 		instructionHelper.adc(registers, statusFlags, memorySupplier.get());
 	}
 
-	// - Registers
-
-	private void increasePc(int value) {
-		registers.setPc((registers.getPc() + value) & 0xFFFF);
-	}
-	
 	// - Other
 
 	private int getOpcode() {

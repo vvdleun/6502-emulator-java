@@ -110,6 +110,18 @@ public class AddressingModeHelperTests {
 	}
 
 	@Test
+	public void shouldFetchIndirectAddress() {
+		byte[] programData = { (byte)0xD0, (byte)0x01, (byte)0xB0 };	// Range: 0x0A..0x0C
+		byte[] data = { 0, 0xF };										// Range: 0xB00..0xB01
+		
+		AddressingModeHelper adressingModeHelper = createAddressingModesHelper(programData, data);
+		
+		int actual = adressingModeHelper.fetchIndirectAddress(PROGRAM_COUNTER);
+		
+		assertEquals(15, actual);
+	}
+
+	@Test
 	public void shouldFetchIndexedIndirectAddress() {
 		byte[] programData = { (byte)0xA1, 6, 0, 0, 0, 0, 0x02, (byte)0xB0 };	// Range: 0x0A..0x11
 		byte[] data = { 0, 0, 0xF };											// Range: 0xB00..0xB02
