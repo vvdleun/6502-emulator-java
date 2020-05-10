@@ -20,10 +20,11 @@ public class Cpu6502 implements Cpu {
 	private final Registers registers;
 	private final StatusFlags statusFlags;
 	private final InstructionHelper instructionHelper;
-
+	
+	// Not final, because they depend on the Bus, which requires a call to connectToBus()
 	private Bus bus = null;
 	private Stack stack = null;
-	private AddressingModeHelper addressingModes = null;
+	private MemoryReaderHelper memoryReader = null;
 	
 	public Cpu6502() {
 		this(new Registers(), new StatusFlags(), new InstructionHelper());
@@ -38,8 +39,8 @@ public class Cpu6502 implements Cpu {
 	@Override
 	public void connectToBus(Bus bus) {
 		this.bus = bus;
-		this.addressingModes = new AddressingModeHelper(bus);
 		this.stack = new Stack(registers, bus);
+		this.memoryReader = new MemoryReaderHelper(registers, bus);
 	}
 
 	@Override
@@ -50,46 +51,51 @@ public class Cpu6502 implements Cpu {
 	private void runNextInstruction() {
 		int opcode = getOpcode();
 		
+		// It's a way too long switch case block for now...
+		// When this class is stable and fully unit-tested, let's see if there's something to gain
+		// (performance/code-wise) to make this implementation smarter (i.e. by making use of the bits
+		// of the opcode).
+		
 		switch(opcode) {
 			// ADC (Add with Carry)
 			case 0x69:
 				// Immediate
-				adc(this::readImmediateValue);
+				adc(memoryReader::readImmediateValue);
 				increasePc(2);
 				break;
 			case 0x65:
 				// Zero Page
-				adc(this::readFromZeroPageAddress);
+				adc(memoryReader::readFromZeroPageAddress);
 				increasePc(2);
 				break;
 			case 0x75:
 				// Zero Page, X
-				adc(this::readFromZeroPageXAddress);
+				adc(memoryReader::readFromZeroPageXAddress);
 				increasePc(2);
 				break;
 			case 0x6D:
 				// Absolute
-				adc(this::readFromAbsoluteAddress);
+				adc(memoryReader::readFromAbsoluteAddress);
 				increasePc(3);
 				break;
 			case 0x7D:
 				// Absolute,X
-				adc(this::readFromAbsoluteXAddress);
+				adc(memoryReader::readFromAbsoluteXAddress);
 				increasePc(3);
 				break;
 			case 0x79:
 				// Absolute,Y
-				adc(this::readFromAbsoluteYAddress);
+				adc(memoryReader::readFromAbsoluteYAddress);
 				increasePc(3);
 				break;
 			case 0x61:
 				// Indirect,X
-				adc(this::readFromIndirectXAddress);
+				adc(memoryReader::readFromIndirectXAddress);
 				increasePc(2);
 				break;
 			case 0x71:
 				// Indirect,Y
-				adc(this::readFromIndirectYAddress);
+				adc(memoryReader::readFromIndirectYAddress);
 				increasePc(2);
 				break;
 			default:
@@ -99,59 +105,11 @@ public class Cpu6502 implements Cpu {
 
 	// Helper methods
 
-	// - Address modes
-	
-	private int readImmediateValue() {
-		final int address = addressingModes.fetchImmediateValue(registers.getPc());
-		return readMemoryAt(address); 
-	}
-	
-	private int readFromZeroPageAddress() {
-		final int address = addressingModes.fetchZeroPageAddress(registers.getPc());
-		return readMemoryAt(address);
-	}
-	
-	private int readFromZeroPageXAddress() {
-		final int address = addressingModes.fetchZeroPageXAddress(registers.getPc(), registers.getX());
-		return readMemoryAt(address);
-	}
-	
-	private int readFromAbsoluteAddress() {
-		final int address = addressingModes.fetchAbsoluteAddress(registers.getPc());
-		return readMemoryAt(address);
-	}
-
-	private int readFromAbsoluteXAddress() {
-		final int address = addressingModes.fetchAbsoluteXAddress(registers.getPc(), registers.getX());
-		return readMemoryAt(address);
-	}
-
-	private int readFromAbsoluteYAddress() {
-		final int address = addressingModes.fetchAbsoluteYAddress(registers.getPc(), registers.getY());
-		return readMemoryAt(address);
-	}
-	
-	private int readFromIndirectXAddress() {
-		final int address = addressingModes.fetchIndirectXAddress(registers.getPc(), registers.getX());
-		return readMemoryAt(address);
-	}
-
-	private int readFromIndirectYAddress() {
-		final int address = addressingModes.fetchIndirectYAddress(registers.getPc(), registers.getY());
-		return readMemoryAt(address);
-	}
-	
-	// - Instructions
-	
 	private void adc(Supplier<Integer> memorySupplier) {
 		instructionHelper.adc(registers, statusFlags, memorySupplier.get());
 	}
 
 	// - Registers
-
-	private void increasePc() {
-		increasePc(1);
-	}
 
 	private void increasePc(int value) {
 		registers.setPc((registers.getPc() + value) & 0xFFFF);
@@ -160,11 +118,7 @@ public class Cpu6502 implements Cpu {
 	// - Other
 
 	private int getOpcode() {
-		return readMemoryAt(registers.getSp());		
-	}
-	
-	private int readMemoryAt(int address) {
-		return bus.readAsUnsignedByte(address & 0xFFFF);
+		return bus.readAsUnsignedByte(registers.getSp());
 	}
 	
 	// Getters / setters
