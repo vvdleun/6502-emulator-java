@@ -1,24 +1,37 @@
 package nl.vincentvanderleun.emulator6502.core.cpu;
 
+import java.util.function.Supplier;
+
 public class InstructionHelper {
-	InstructionHelper() {
+	private final Registers registers;
+	private final StatusFlags statusFlags;
+	
+	InstructionHelper(Registers registers, StatusFlags statusFlags) {
+		this.registers = registers;
+		this.statusFlags = statusFlags;
 	}
 
-	public void adc(Registers registers, StatusFlags statusFlags, int value) {
-		int registerA = registers.getA();
-		value = value & 0xFF;
-
-		int result = registerA + value + statusFlags.getCarry();
+	public void adc(Supplier<Integer> memory) {
+		int result = registers.getA() + memory.get() + statusFlags.getCarry();
 
 		statusFlags.setCarry(result > 255);
 
 		result = result & 0xFF;
 		
-		registers.setA(result);
-
 		statusFlags.setZero(result == 0);
 		statusFlags.setNegative((result & 0x80) != 0);
-		setOverflow(statusFlags, registerA, value, result);		 
+		setOverflow(statusFlags, registers.getA(), memory.get(), result);
+		
+		registers.setA(result);
+	}
+	
+	public void and(Supplier<Integer> memory) {
+		final int result = registers.getA() & memory.get();
+		
+		statusFlags.setNegative((result & 0x80) != 0);
+		statusFlags.setZero(result == 0);
+
+		registers.setA(result);
 	}
 
 	private void setOverflow(StatusFlags statusFlags, int value1, int value2, int result) {

@@ -16,13 +16,13 @@ class InstructionHelperTests {
 
 	private Registers registers = new Registers();
 	private StatusFlags statusFlags = new StatusFlags();
-	private InstructionHelper instructionHelper = new InstructionHelper();
+	private InstructionHelper instructionHelper = new InstructionHelper(registers, statusFlags);
 
 	// ADC tests
 
 	private void adc(int registerA, int memoryValue) {
 		registers.setA(registerA);
-		instructionHelper.adc(registers, statusFlags, memoryValue);
+		instructionHelper.adc(() -> memoryValue);
 	}
 
 	@Test
@@ -131,12 +131,49 @@ class InstructionHelperTests {
 
 		assertARegisterAndCzvnFlags(0x00, CARRY_SET, ZERO_SET, OVERFLOW_RESET, NEGATIVE_RESET);
 	}
+
+	// AND tests
+
+	private void and(int registerA, int memoryValue) {
+		registers.setA(registerA);
+		instructionHelper.and(() -> memoryValue);
+	}
+
+	@Test
+	public void and03and01() {
+		and(3, 1);
+		assertARegisterAndZnFlags(1, ZERO_RESET, NEGATIVE_RESET);
+	}
+
+	@Test
+	public void andFFandEF() {
+		and(0xFF, 0xEF);
+		assertARegisterAndZnFlags(0xEF, ZERO_RESET, NEGATIVE_SET);
+	}
+
+	@Test
+	public void and00and00() {
+		and(0, 0);
+		assertARegisterAndZnFlags(0, ZERO_SET, NEGATIVE_RESET);
+	}
 	
 	private void assertARegisterAndCzvnFlags(int a, int carry, int zero, int overflow, int negative) {
 		assertEquals(a, registers.getA());
+
 		assertEquals(carry, statusFlags.getCarry());
 		assertEquals(zero, statusFlags.getZero());
 		assertEquals(overflow, statusFlags.getOverflow());
+		assertEquals(negative, statusFlags.getNegative());
+		assertEquals(0, statusFlags.getDecimal());
+		assertEquals(0, statusFlags.getInterruptDisable());
+	}
+	
+	private void assertARegisterAndZnFlags(int a, int zero, int negative) {
+		assertEquals(a, registers.getA());
+
+		assertEquals(0, statusFlags.getCarry());
+		assertEquals(zero, statusFlags.getZero());
+		assertEquals(0, statusFlags.getOverflow());
 		assertEquals(negative, statusFlags.getNegative());
 		assertEquals(0, statusFlags.getDecimal());
 		assertEquals(0, statusFlags.getInterruptDisable());

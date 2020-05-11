@@ -1,7 +1,5 @@
 package nl.vincentvanderleun.emulator6502.core.cpu;
 
-import java.util.function.Supplier;
-
 import nl.vincentvanderleun.emulator6502.core.Bus;
 import nl.vincentvanderleun.emulator6502.core.Cpu;
 
@@ -19,7 +17,7 @@ public class Cpu6502 implements Cpu {
 	
 	private final Registers registers;
 	private final StatusFlags statusFlags;
-	private final InstructionHelper instructionHelper;
+	private final InstructionHelper instructions;
 	
 	// Not final, because they depend on the Bus, which requires a call to connectToBus()
 	private Bus bus = null;
@@ -27,14 +25,19 @@ public class Cpu6502 implements Cpu {
 	private MemoryReaderHelper memoryReader = null;
 	
 	public Cpu6502() {
-		this(new Registers(), new StatusFlags(), new InstructionHelper());
+		this(new Registers(), new StatusFlags());
   	}
-	
+
+	private Cpu6502(Registers registers, StatusFlags statusFlags) {
+		this(registers, statusFlags, new InstructionHelper(registers, statusFlags));
+	}
+
 	Cpu6502(Registers registers, StatusFlags statusFlags, InstructionHelper instructionHelper) {
 		this.registers = registers;
 		this.statusFlags = statusFlags;
-		this.instructionHelper = instructionHelper;
+		this.instructions = instructionHelper;
 	}
+
 	
 	@Override
 	public void connectToBus(Bus bus) {
@@ -60,53 +63,88 @@ public class Cpu6502 implements Cpu {
 			// ADC (Add with Carry)
 			case 0x69:
 				// Immediate
-				adc(memoryReader::readImmediateValue);
+				instructions.adc(memoryReader::readImmediateValue);
 				registers.increasePc(2);
 				break;
 			case 0x65:
 				// Zero Page
-				adc(memoryReader::readFromZeroPageAddress);
+				instructions.adc(memoryReader::readFromZeroPageAddress);
 				registers.increasePc(2);
 				break;
 			case 0x75:
 				// Zero Page, X
-				adc(memoryReader::readFromZeroPageXAddress);
+				instructions.adc(memoryReader::readFromZeroPageXAddress);
 				registers.increasePc(2);
 				break;
 			case 0x6D:
 				// Absolute
-				adc(memoryReader::readFromAbsoluteAddress);
+				instructions.adc(memoryReader::readFromAbsoluteAddress);
 				registers.increasePc(3);
 				break;
 			case 0x7D:
 				// Absolute,X
-				adc(memoryReader::readFromAbsoluteXAddress);
+				instructions.adc(memoryReader::readFromAbsoluteXAddress);
 				registers.increasePc(3);
 				break;
 			case 0x79:
 				// Absolute,Y
-				adc(memoryReader::readFromAbsoluteYAddress);
+				instructions.adc(memoryReader::readFromAbsoluteYAddress);
 				registers.increasePc(3);
 				break;
 			case 0x61:
 				// Indirect,X
-				adc(memoryReader::readFromIndirectXAddress);
+				instructions.adc(memoryReader::readFromIndirectXAddress);
 				registers.increasePc(2);
 				break;
 			case 0x71:
 				// Indirect,Y
-				adc(memoryReader::readFromIndirectYAddress);
+				instructions.adc(memoryReader::readFromIndirectYAddress);
+				registers.increasePc(2);
+				break;
+			// AND
+			case 0x29:
+				// Immediate
+				instructions.and(memoryReader::readImmediateValue);
+				registers.increasePc(2);
+				break;
+			case 0x25:
+				// Zero Page
+				instructions.and(memoryReader::readFromZeroPageAddress);
+				registers.increasePc(2);
+				break;
+			case 0x35:
+				// Zero Page,X
+				instructions.and(memoryReader::readFromZeroPageXAddress);
+				registers.increasePc(2);
+				break;
+			case 0x2D:
+				// Absolute,X
+				instructions.and(memoryReader::readFromAbsoluteAddress);
+				registers.increasePc(3);
+				break;
+			case 0x3D:
+				// Absolute,X
+				instructions.and(memoryReader::readFromAbsoluteXAddress);
+				registers.increasePc(3);
+				break;
+			case 0x39:
+				// Absolute,Y
+				instructions.and(memoryReader::readFromAbsoluteYAddress);
+				registers.increasePc(3);
+				break;
+			case 0x21:
+				// Indirect,X
+				instructions.and(memoryReader::readFromIndirectXAddress);
+				registers.increasePc(2);
+				break;
+			case 0x31:
+				// Indirect,Y
+				instructions.and(memoryReader::readFromIndirectYAddress);
 				registers.increasePc(2);
 				break;
 			default:
 				throw new IllegalStateException("Unknown opcode: " + opcode);
 		}
-	}
-
-	// Helper methods
-
-	private void adc(Supplier<Integer> memorySupplier) {
-		instructionHelper.adc(registers, statusFlags, memorySupplier.get());
 	}
 
 	// - Other
