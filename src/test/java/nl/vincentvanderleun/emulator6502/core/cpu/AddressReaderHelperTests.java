@@ -21,7 +21,7 @@ public class AddressReaderHelperTests {
 	public void shouldFetchAbsoluteAddress() {
 		byte[] programData = { (byte)0x8D, (byte)0xC0, (byte)1 };
 
-		AddressReaderHelper adressingModeHelper = createAddressingModesHelper(programData);
+		AdressingModeHelper adressingModeHelper = createAddressingModesHelper(programData);
 
 		int actual = adressingModeHelper.fetchAbsoluteAddress(PROGRAM_COUNTER);
 		
@@ -32,7 +32,7 @@ public class AddressReaderHelperTests {
 	public void shouldFetchZeroPageAddress() {
 		byte[] programData = { (byte)0x85, (byte)0xA0 };
 	
-		AddressReaderHelper adressingModeHelper = createAddressingModesHelper(programData);
+		AdressingModeHelper adressingModeHelper = createAddressingModesHelper(programData);
 		
 		int actual = adressingModeHelper.fetchZeroPageAddress(PROGRAM_COUNTER);
 		
@@ -43,7 +43,7 @@ public class AddressReaderHelperTests {
 	public void shouldFetchZeroPageXAddress() {
 		byte[] programData = { (byte)0x95, (byte)0xA0 };
 		
-		AddressReaderHelper adressingModeHelper = createAddressingModesHelper(programData);
+		AdressingModeHelper adressingModeHelper = createAddressingModesHelper(programData);
 		final int REGISTER_X = 5;
 		
 		int actual = adressingModeHelper.fetchZeroPageXAddress(PROGRAM_COUNTER, REGISTER_X);
@@ -55,7 +55,7 @@ public class AddressReaderHelperTests {
 	public void shouldFetchZeroPageYAddress() {
 		byte[] programData = { (byte)0x95, (byte)0xB0 };
 		
-		AddressReaderHelper adressingModeHelper = createAddressingModesHelper(programData);
+		AdressingModeHelper adressingModeHelper = createAddressingModesHelper(programData);
 		final int REGISTER_Y = 6;
 		
 		int actual = adressingModeHelper.fetchZeroPageYAddress(PROGRAM_COUNTER, REGISTER_Y);
@@ -67,7 +67,7 @@ public class AddressReaderHelperTests {
 	public void shouldFetchAbsoluteXAddress() {
 		byte[] programData = { (byte)0x9D, (byte)0x02, (byte)0x01 };
 		
-		AddressReaderHelper adressingModeHelper = createAddressingModesHelper(programData);
+		AdressingModeHelper adressingModeHelper = createAddressingModesHelper(programData);
 		final int REGISTER_X = 0xD0;
 		
 		int actual = adressingModeHelper.fetchAbsoluteXAddress(PROGRAM_COUNTER, REGISTER_X);
@@ -79,7 +79,7 @@ public class AddressReaderHelperTests {
 	public void shouldFetchAbsoluteYAddress() {
 		byte[] programData = { (byte)0x99, (byte)0x03, (byte)0x02 };
 		
-		AddressReaderHelper adressingModeHelper = createAddressingModesHelper(programData);
+		AdressingModeHelper adressingModeHelper = createAddressingModesHelper(programData);
 		final int REGISTER_Y = 0xE0;
 
 		int actual = adressingModeHelper.fetchAbsoluteYAddress(PROGRAM_COUNTER, REGISTER_Y);
@@ -91,7 +91,7 @@ public class AddressReaderHelperTests {
 	public void shouldFetchImmediateValue() {
 		byte[] programData = { (byte)0xE9, (byte)0xAA };
 		
-		AddressReaderHelper adressingModeHelper = createAddressingModesHelper(programData);
+		AdressingModeHelper adressingModeHelper = createAddressingModesHelper(programData);
 		
 		int actual = adressingModeHelper.fetchImmediateValue(PROGRAM_COUNTER);
 		
@@ -102,7 +102,7 @@ public class AddressReaderHelperTests {
 	public void shouldFetchRelativeAddress() {
 		byte[] programData = { (byte)0xD0, (byte)0xFA };
 		
-		AddressReaderHelper adressingModeHelper = createAddressingModesHelper(programData);
+		AdressingModeHelper adressingModeHelper = createAddressingModesHelper(programData);
 		
 		int actual = adressingModeHelper.fetchRelativeAddress(PROGRAM_COUNTER);
 		
@@ -114,7 +114,7 @@ public class AddressReaderHelperTests {
 		byte[] programData = { (byte)0xD0, (byte)0x01, (byte)0xB0 };	// Range: 0x0A..0x0C
 		byte[] data = { 0, 0xF };										// Range: 0xB00..0xB01
 		
-		AddressReaderHelper adressingModeHelper = createAddressingModesHelper(programData, data);
+		AdressingModeHelper adressingModeHelper = createAddressingModesHelper(programData, data);
 		
 		int actual = adressingModeHelper.fetchIndirectAddress(PROGRAM_COUNTER);
 		
@@ -128,7 +128,7 @@ public class AddressReaderHelperTests {
 		
 		final int REGISTER_X = 0xA;
 		
-		AddressReaderHelper adressingModeHelper = createAddressingModesHelper(programData, data);
+		AdressingModeHelper adressingModeHelper = createAddressingModesHelper(programData, data);
 	
 		int actual = adressingModeHelper.fetchIndirectXAddress(PROGRAM_COUNTER, REGISTER_X);
 		
@@ -151,7 +151,7 @@ public class AddressReaderHelperTests {
 		
 		final int REGISTER_Y = 0x2;
 		
-		AddressReaderHelper adressingModeHelper = createAddressingModesHelper(programData);
+		AdressingModeHelper adressingModeHelper = createAddressingModesHelper(programData);
 	
 		int actual = adressingModeHelper.fetchIndirectYAddress(PROGRAM_COUNTER, REGISTER_Y);
 		
@@ -162,11 +162,11 @@ public class AddressReaderHelperTests {
 
 	// Helper methods
 
-	private AddressReaderHelper createAddressingModesHelper(byte[] programBytes) {
+	private AdressingModeHelper createAddressingModesHelper(byte[] programBytes) {
 		return createAddressingModesHelper(programBytes, null);
 	}
 
-	private AddressReaderHelper createAddressingModesHelper(byte[] programBytes, byte[] dataBytes) {
+	private AdressingModeHelper createAddressingModesHelper(byte[] programBytes, byte[] dataBytes) {
 		List<Memory> memory = new ArrayList<>();
 
 		final int START_ADDRESS_PROGRAM = PROGRAM_COUNTER;
@@ -184,6 +184,6 @@ public class AddressReaderHelperTests {
 
 		Bus bus = new DynamicBus(cpu, memory);
 
-		return new AddressReaderHelper(bus);
+		return new AdressingModeHelper(bus);
 	}
 }

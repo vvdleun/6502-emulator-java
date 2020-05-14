@@ -173,6 +173,17 @@ public class Cpu6502 implements Cpu {
 				instructions.asl(memReader::readFromAbsoluteXAddress, memWriter::writeToAbsoluteXAddress);
 				registers.increasePc(3);
 				break;
+			// BIT (test BITs)
+			case 0x24:
+				// Zero Page
+				instructions.bit(memReader::readFromZeroPageAddress, regReader::readA);
+				registers.increasePc(2);
+				break;
+			case 0x2C:
+				// Absolute
+				instructions.bit(memReader::readFromAbsoluteAddress, regReader::readA);
+				registers.increasePc(3);
+				break;
 			default:
 				throw new IllegalStateException("Unknown opcode: " + opcode);
 		}

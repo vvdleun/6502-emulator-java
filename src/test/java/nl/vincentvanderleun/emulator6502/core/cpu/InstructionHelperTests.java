@@ -180,8 +180,46 @@ class InstructionHelperTests {
 		assertZnFlags(ZERO_SET, NEGATIVE_RESET);
 	}
 	
+	// BIT tests
+
+	private void bit(int input1, int input2) {
+		instructionHelper.bit(() -> input1, () -> input2);
+	}
+	
+	@Test
+	public void bit00and00() {
+		bit(0x00, 0x00);
+
+		assertZvnFlags(ZERO_SET, OVERFLOW_RESET, NEGATIVE_RESET);
+	}
+
+	@Test
+	public void bitFEandFF() {
+		bit(0xFE, 0xFF);
+
+		assertZvnFlags(ZERO_RESET, OVERFLOW_SET, NEGATIVE_SET);
+	}
+
+	@Test
+	public void bitBFand00() {
+		bit(0xBF, 0x00);
+
+		assertZvnFlags(ZERO_SET, OVERFLOW_RESET, NEGATIVE_SET);
+	}
+	
+	// Helper methods
+	
 	private void assertCzvnFlags(int carry, int zero, int overflow, int negative) {
 		assertEquals(carry, statusFlags.getCarry());
+		assertEquals(zero, statusFlags.getZero());
+		assertEquals(overflow, statusFlags.getOverflow());
+		assertEquals(negative, statusFlags.getNegative());
+		assertEquals(0, statusFlags.getDecimal());
+		assertEquals(0, statusFlags.getInterruptDisable());
+	}
+
+	private void assertZvnFlags(int zero, int overflow, int negative) {
+		assertEquals(0, statusFlags.getCarry());
 		assertEquals(zero, statusFlags.getZero());
 		assertEquals(overflow, statusFlags.getOverflow());
 		assertEquals(negative, statusFlags.getNegative());

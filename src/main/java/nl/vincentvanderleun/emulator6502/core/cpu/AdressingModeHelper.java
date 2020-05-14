@@ -2,10 +2,10 @@ package nl.vincentvanderleun.emulator6502.core.cpu;
 
 import nl.vincentvanderleun.emulator6502.core.Bus;
 
-public class AddressReaderHelper {
+public class AdressingModeHelper {
 	private final Bus bus;
 	
-	AddressReaderHelper(Bus bus) {
+	AdressingModeHelper(Bus bus) {
 		this.bus = bus;
 	}
 	
