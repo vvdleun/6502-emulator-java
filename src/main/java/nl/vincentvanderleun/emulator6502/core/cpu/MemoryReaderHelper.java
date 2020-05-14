@@ -3,15 +3,15 @@ package nl.vincentvanderleun.emulator6502.core.cpu;
 import nl.vincentvanderleun.emulator6502.core.Bus;
 
 public class MemoryReaderHelper {
-	private final AddressingModeHelper addressingModes;
+	private final AddressReaderHelper addressingModes;
 	private final Registers registers;
 	private final Bus bus;
 
 	MemoryReaderHelper(Registers registers, Bus bus) {
-		this(new AddressingModeHelper(bus), registers, bus);
+		this(new AddressReaderHelper(bus), registers, bus);
 	}
 
-	MemoryReaderHelper(AddressingModeHelper addressingModeHelper, Registers registers, Bus bus) {
+	MemoryReaderHelper(AddressReaderHelper addressingModeHelper, Registers registers, Bus bus) {
 		this.addressingModes = addressingModeHelper;
 		this.registers = registers;
 		this.bus = bus;

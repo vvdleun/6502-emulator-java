@@ -21,7 +21,7 @@ class MemoryReaderHelperTests {
 
 	private Bus bus = mock(Bus.class);
 	private Registers registers = mock(Registers.class);
-	private AddressingModeHelper adressingModeHelper = mock(AddressingModeHelper.class);
+	private AddressReaderHelper adressingModeHelper = mock(AddressReaderHelper.class);
 	private MemoryReaderHelper memoryReaderHelper = new MemoryReaderHelper(adressingModeHelper, registers, bus);
 	
 	@BeforeEach

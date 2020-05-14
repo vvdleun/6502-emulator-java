@@ -18,6 +18,8 @@ public class Cpu6502 implements Cpu {
 	private final Registers registers;
 	private final StatusFlags statusFlags;
 	private final InstructionHelper instructions;
+	private final RegisterReaderHelper registerReader;
+	private final RegisterWriterHelper registerWriter;
 	
 	// Not final, because they depend on the Bus, which requires a call to connectToBus()
 	private Bus bus = null;
@@ -29,13 +31,15 @@ public class Cpu6502 implements Cpu {
   	}
 
 	private Cpu6502(Registers registers, StatusFlags statusFlags) {
-		this(registers, statusFlags, new InstructionHelper(registers, statusFlags));
+		this(registers, statusFlags, new InstructionHelper(statusFlags), new RegisterReaderHelper(registers), new RegisterWriterHelper(registers));
 	}
 
-	Cpu6502(Registers registers, StatusFlags statusFlags, InstructionHelper instructionHelper) {
+	Cpu6502(Registers registers, StatusFlags statusFlags, InstructionHelper instructionHelper, RegisterReaderHelper registerReaderHelper, RegisterWriterHelper registerWriterHelper) {
 		this.registers = registers;
 		this.statusFlags = statusFlags;
 		this.instructions = instructionHelper;
+		this.registerReader = registerReaderHelper;
+		this.registerWriter = registerWriterHelper;
 	}
 
 	
@@ -59,88 +63,98 @@ public class Cpu6502 implements Cpu {
 		// (performance/code-wise) to make this implementation smarter (i.e. by making use of the bits
 		// of the opcode).
 		
+		final RegisterReaderHelper regReader = registerReader;
+		final RegisterWriterHelper regWriter = registerWriter;
+		final MemoryReaderHelper memReader = memoryReader;
+		
 		switch(opcode) {
 			// ADC (Add with Carry)
 			case 0x69:
 				// Immediate
-				instructions.adc(memoryReader::readImmediateValue);
+				instructions.adc(regReader::readA, memReader::readImmediateValue, regWriter::writeA);
 				registers.increasePc(2);
 				break;
 			case 0x65:
 				// Zero Page
-				instructions.adc(memoryReader::readFromZeroPageAddress);
+				instructions.adc(regReader::readA, memReader::readFromZeroPageAddress, regWriter::writeA);
 				registers.increasePc(2);
 				break;
 			case 0x75:
 				// Zero Page, X
-				instructions.adc(memoryReader::readFromZeroPageXAddress);
+				instructions.adc(regReader::readA, memReader::readFromZeroPageXAddress, regWriter::writeA);
 				registers.increasePc(2);
 				break;
 			case 0x6D:
 				// Absolute
-				instructions.adc(memoryReader::readFromAbsoluteAddress);
+				instructions.adc(regReader::readA, memReader::readFromAbsoluteAddress, regWriter::writeA);
 				registers.increasePc(3);
 				break;
 			case 0x7D:
 				// Absolute,X
-				instructions.adc(memoryReader::readFromAbsoluteXAddress);
+				instructions.adc(regReader::readA, memReader::readFromAbsoluteXAddress, regWriter::writeA);
 				registers.increasePc(3);
 				break;
 			case 0x79:
 				// Absolute,Y
-				instructions.adc(memoryReader::readFromAbsoluteYAddress);
+				instructions.adc(regReader::readA, memReader::readFromAbsoluteYAddress, regWriter::writeA);
 				registers.increasePc(3);
 				break;
 			case 0x61:
 				// Indirect,X
-				instructions.adc(memoryReader::readFromIndirectXAddress);
+				instructions.adc(regReader::readA, memReader::readFromIndirectXAddress, regWriter::writeA);
 				registers.increasePc(2);
 				break;
 			case 0x71:
 				// Indirect,Y
-				instructions.adc(memoryReader::readFromIndirectYAddress);
+				instructions.adc(regReader::readA, memReader::readFromIndirectYAddress, regWriter::writeA);
 				registers.increasePc(2);
 				break;
 			// AND
 			case 0x29:
 				// Immediate
-				instructions.and(memoryReader::readImmediateValue);
+				instructions.and(regReader::readA, memReader::readImmediateValue, regWriter::writeA);
 				registers.increasePc(2);
 				break;
 			case 0x25:
 				// Zero Page
-				instructions.and(memoryReader::readFromZeroPageAddress);
+				instructions.and(regReader::readA, memReader::readFromZeroPageAddress, regWriter::writeA);
 				registers.increasePc(2);
 				break;
 			case 0x35:
 				// Zero Page,X
-				instructions.and(memoryReader::readFromZeroPageXAddress);
+				instructions.and(regReader::readA, memReader::readFromZeroPageXAddress, regWriter::writeA);
 				registers.increasePc(2);
 				break;
 			case 0x2D:
-				// Absolute,X
-				instructions.and(memoryReader::readFromAbsoluteAddress);
+				// Absolute
+				instructions.and(regReader::readA, memReader::readFromAbsoluteAddress, regWriter::writeA);
 				registers.increasePc(3);
 				break;
 			case 0x3D:
 				// Absolute,X
-				instructions.and(memoryReader::readFromAbsoluteXAddress);
+				instructions.and(regReader::readA, memReader::readFromAbsoluteXAddress, regWriter::writeA);
 				registers.increasePc(3);
 				break;
 			case 0x39:
 				// Absolute,Y
-				instructions.and(memoryReader::readFromAbsoluteYAddress);
+				instructions.and(regReader::readA, memReader::readFromAbsoluteYAddress, regWriter::writeA);
 				registers.increasePc(3);
 				break;
 			case 0x21:
 				// Indirect,X
-				instructions.and(memoryReader::readFromIndirectXAddress);
+				instructions.and(regReader::readA, memReader::readFromIndirectXAddress, regWriter::writeA);
 				registers.increasePc(2);
 				break;
 			case 0x31:
 				// Indirect,Y
-				instructions.and(memoryReader::readFromIndirectYAddress);
+				instructions.and(regReader::readA, memReader::readFromIndirectYAddress, regWriter::writeA);
 				registers.increasePc(2);
+				break;
+			// ASL (Arithmetic Shift Left)
+			case 0x0A:
+				// Accumulator
+				instructions.asl(regReader::readA, regWriter::writeA);
+				registers.increasePc();
 				break;
 			default:
 				throw new IllegalStateException("Unknown opcode: " + opcode);

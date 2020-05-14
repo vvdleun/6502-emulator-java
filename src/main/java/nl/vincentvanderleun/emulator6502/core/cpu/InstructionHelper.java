@@ -1,18 +1,17 @@
 package nl.vincentvanderleun.emulator6502.core.cpu;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class InstructionHelper {
-	private final Registers registers;
 	private final StatusFlags statusFlags;
 	
-	InstructionHelper(Registers registers, StatusFlags statusFlags) {
-		this.registers = registers;
+	InstructionHelper(StatusFlags statusFlags) {
 		this.statusFlags = statusFlags;
 	}
 
-	public void adc(Supplier<Integer> memory) {
-		int result = registers.getA() + memory.get() + statusFlags.getCarry();
+	public void adc(Supplier<Integer> input1, Supplier<Integer> input2, Consumer<Integer> output) {
+		int result = input1.get() + input2.get() + statusFlags.getCarry();
 
 		statusFlags.setCarry(result > 255);
 
@@ -20,18 +19,29 @@ public class InstructionHelper {
 		
 		statusFlags.setZero(result == 0);
 		statusFlags.setNegative((result & 0x80) != 0);
-		setOverflow(statusFlags, registers.getA(), memory.get(), result);
-		
-		registers.setA(result);
+		setOverflow(statusFlags, input1.get(), input2.get(), result);
+
+		output.accept(result);
 	}
 	
-	public void and(Supplier<Integer> memory) {
-		final int result = registers.getA() & memory.get();
+	public void and(Supplier<Integer> input1, Supplier<Integer> input2, Consumer<Integer> output) {
+		final int result = input1.get() & input2.get();
 		
 		statusFlags.setNegative((result & 0x80) != 0);
 		statusFlags.setZero(result == 0);
 
-		registers.setA(result);
+		output.accept(result);
+	}
+	
+	public void asl(Supplier<Integer> input, Consumer<Integer> output) {
+		statusFlags.setCarry((input.get() & 0x80) != 0);
+
+		final int result = (input.get() << 1) & 0xFF;
+		
+		statusFlags.setNegative((result & 0x80) != 0);
+		statusFlags.setZero(result == 0);
+		
+		output.accept(result);
 	}
 
 	private void setOverflow(StatusFlags statusFlags, int value1, int value2, int result) {
