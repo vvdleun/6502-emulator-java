@@ -19,10 +19,10 @@ class InstructionHelperTests {
 		
 	// ADC tests
 
-	private int adc(int value1, int value2) {
-		int[] result = { 0 };
-		instructionHelper.adc(() -> value1, () -> value2, (r) -> result[0] = r);
-		return result[0];
+	private int adc(int input1, int input2) {
+		int[] output = { 0 };
+		instructionHelper.adc(() -> input1, () -> input2, (result) -> output[0] = result);
+		return output[0];
 	}
 
 	@Test
@@ -151,9 +151,9 @@ class InstructionHelperTests {
 	// AND tests
 
 	private int and(int input1, int input2) {
-		int[] result = { 0 };
-		instructionHelper.and(() -> input1, () -> input2, (r) -> result[0] = r);
-		return result[0];
+		int[] output = { 0 };
+		instructionHelper.and(() -> input1, () -> input2, (result) -> output[0] = result);
+		return output[0];
 	}
 
 	@Test

@@ -18,13 +18,14 @@ public class Cpu6502 implements Cpu {
 	private final Registers registers;
 	private final StatusFlags statusFlags;
 	private final InstructionHelper instructions;
-	private final RegisterReaderHelper registerReader;
-	private final RegisterWriterHelper registerWriter;
+	private final RegisterReaderHelper regReader;
+	private final RegisterWriterHelper regWriter;
 	
 	// Not final, because they depend on the Bus, which requires a call to connectToBus()
 	private Bus bus = null;
 	private Stack stack = null;
-	private MemoryReaderHelper memoryReader = null;
+	private MemoryReaderHelper memReader = null;
+	private MemoryWriterHelper memWriter = null;
 	
 	public Cpu6502() {
 		this(new Registers(), new StatusFlags());
@@ -38,8 +39,8 @@ public class Cpu6502 implements Cpu {
 		this.registers = registers;
 		this.statusFlags = statusFlags;
 		this.instructions = instructionHelper;
-		this.registerReader = registerReaderHelper;
-		this.registerWriter = registerWriterHelper;
+		this.regReader = registerReaderHelper;
+		this.regWriter = registerWriterHelper;
 	}
 
 	
@@ -47,7 +48,8 @@ public class Cpu6502 implements Cpu {
 	public void connectToBus(Bus bus) {
 		this.bus = bus;
 		this.stack = new Stack(registers, bus);
-		this.memoryReader = new MemoryReaderHelper(registers, bus);
+		this.memReader = new MemoryReaderHelper(registers, bus);
+		this.memWriter = new MemoryWriterHelper(registers, bus);
 	}
 
 	@Override
@@ -62,11 +64,6 @@ public class Cpu6502 implements Cpu {
 		// When this class is stable and fully unit-tested, let's see if there's something to gain
 		// (performance/code-wise) to make this implementation smarter (i.e. by making use of the bits
 		// of the opcode).
-		
-		final RegisterReaderHelper regReader = registerReader;
-		final RegisterWriterHelper regWriter = registerWriter;
-		final MemoryReaderHelper memReader = memoryReader;
-		
 		switch(opcode) {
 			// ADC (Add with Carry)
 			case 0x69:
@@ -155,6 +152,26 @@ public class Cpu6502 implements Cpu {
 				// Accumulator
 				instructions.asl(regReader::readA, regWriter::writeA);
 				registers.increasePc();
+				break;
+			case 0x06:
+				// Zero Page
+				instructions.asl(memReader::readFromZeroPageAddress, memWriter::writeToZeroPageAddress);
+				registers.increasePc(2);
+				break;
+			case 0x16:
+				// Zero Page,X
+				instructions.asl(memReader::readFromZeroPageXAddress, memWriter::writeToZeroPageXAddress);
+				registers.increasePc(2);
+				break;
+			case 0x0E:
+				// Absolute
+				instructions.asl(memReader::readFromAbsoluteAddress, memWriter::writeToAbsoluteAddress);
+				registers.increasePc(3);
+				break;
+			case 0x1E:
+				// Absolute,X
+				instructions.asl(memReader::readFromAbsoluteXAddress, memWriter::writeToAbsoluteXAddress);
+				registers.increasePc(3);
 				break;
 			default:
 				throw new IllegalStateException("Unknown opcode: " + opcode);
