@@ -180,6 +180,48 @@ class InstructionHelperTests {
 		assertZnFlags(ZERO_SET, NEGATIVE_RESET);
 	}
 	
+	// ASL tests
+	
+	private int asl(int input) {
+		int[] output = { 0 };
+
+		instructionHelper.asl(() -> input, (result) -> output[0] = result);
+		
+		return output[0];
+	}
+	
+	@Test
+	public void asl00() {
+		int actual = asl(0x00);
+				
+		assertEquals(0x00, actual);
+		assertCznFlags(CARRY_RESET, ZERO_SET, NEGATIVE_RESET);		
+	}
+
+	@Test
+	public void aslFF() {
+		int actual = asl(0xFF);
+				
+		assertEquals(0xFE, actual);
+		assertCznFlags(CARRY_SET, ZERO_RESET, NEGATIVE_SET);		
+	}
+	
+	@Test
+	public void aslAA() {
+		int actual = asl(0xAA);
+				
+		assertEquals(0x54, actual);
+		assertCznFlags(CARRY_SET, ZERO_RESET, NEGATIVE_RESET);		
+	}
+
+	@Test
+	public void asl7F() {
+		int actual = asl(0x7F);
+				
+		assertEquals(0xFE, actual);
+		assertCznFlags(CARRY_RESET, ZERO_RESET, NEGATIVE_SET);		
+	}
+	
 	// BIT tests
 
 	private void bit(int input1, int input2) {
@@ -218,6 +260,15 @@ class InstructionHelperTests {
 		assertEquals(0, statusFlags.getInterruptDisable());
 	}
 
+	private void assertCznFlags(int carry, int zero, int negative) {
+		assertEquals(carry, statusFlags.getCarry());
+		assertEquals(zero, statusFlags.getZero());
+		assertEquals(0, statusFlags.getOverflow());
+		assertEquals(negative, statusFlags.getNegative());
+		assertEquals(0, statusFlags.getDecimal());
+		assertEquals(0, statusFlags.getInterruptDisable());
+	}
+	
 	private void assertZvnFlags(int zero, int overflow, int negative) {
 		assertEquals(0, statusFlags.getCarry());
 		assertEquals(zero, statusFlags.getZero());
